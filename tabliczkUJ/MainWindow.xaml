@@ -5,8 +5,62 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:tabliczkUJ"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="500" Width="1000">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="8*" MaxWidth="800"/>
+      <ColumnDefinition Width="2*" />
+    </Grid.ColumnDefinitions>
+    <FlowDocumentScrollViewer Grid.Column="0">
+      <FlowDocument PageWidth="800" Background="Beige">
+        <Table>
+          <Table.Columns>
+            <TableColumn Width="200"/>
+            <TableColumn Width="Auto"/>
+          </Table.Columns>
+          <TableRowGroup>
+            <TableRow>
+              <TableCell>
+                <BlockUIContainer Background="Yellow" >
+                  <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Left">
+                    <Image Source="assets/defaultLogo.gif" Name="logoImage" MaxWidth="200" MaxHeight="200" HorizontalAlignment="Left"/>
+                  </Border>
+                </BlockUIContainer>
+              </TableCell>
 
-    </Grid>
+              <TableCell>
+                <BlockUIContainer>
+                  <RichTextBox Name="roomName" Width="300" Height="200">
+                    <FlowDocument>
+                      <Paragraph TextAlignment="Center">
+                        Nr sali
+                      </Paragraph>
+                    </FlowDocument>
+                  </RichTextBox>
+                </BlockUIContainer>
+                
+              </TableCell>
+            </TableRow>
+          </TableRowGroup>
+        </Table>
+        <BlockUIContainer >
+          <RichTextBox Name="room" Width="300" Height="40">
+            <FlowDocument>
+              <Paragraph TextAlignment="Center">
+                Nazwiska
+              </Paragraph>
+            </FlowDocument>
+          </RichTextBox>
+        </BlockUIContainer>
+      </FlowDocument>
+    </FlowDocumentScrollViewer>
+    <StackPanel Grid.Column="1" Background="BlueViolet">
+      <Button Name="sala" Content="Numer sali" Height="60" Width="120" />
+      <Button Name="nazwiska" Content="Nazwiska" Height="60" Width="120"/>
+      <Button Name="saveButton" Content="Zapisz" Height="60" Width="120"/>
+      <Button Name="logoButton" Content="Wczytaj logo" Height="60" Width="120" Click="Button_Click"/>
+      <Button Name="readButton" Content="Wczytaj" Height="60" Width="120"/>
+      <Button Name="printButton" Content="Drukuj" Height="60" Width="120"/>
+    </StackPanel>
+  </Grid>
 </Window>
