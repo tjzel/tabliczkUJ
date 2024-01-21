@@ -1,24 +1,31 @@
-﻿using System.Text;
+﻿using Microsoft.Win32;
+using System.CodeDom;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace tabliczkUJ
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+  /// <summary>
+  /// Interaction logic for MainWindow.xaml
+  /// </summary>
+  public partial class MainWindow : Window
+  {
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+      InitializeComponent();
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+      var openFileDialog = new OpenFileDialog
+      {
+        Filter = "Image files|*.png;*.jpeg;*.jpg;*.gif|All files|*.*"
+      };
+      if (openFileDialog.ShowDialog() == true)
+      {
+        Uri fileUri = new Uri(openFileDialog.FileName);
+        logoImage.Source = new BitmapImage(fileUri);
+      }
+    }
+  }
 }

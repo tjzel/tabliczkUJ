@@ -1,11 +1,11 @@
-﻿using System.Windows.Controls;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Windows.Controls;
 
 namespace tabliczkUJ
 {
   interface IContentObject
   {
-    public void Serialize();
+    public string Serialize();
     public void SetPosition(int x, int y);
     public void SetSize(int x, int y);
   }
@@ -20,9 +20,9 @@ namespace tabliczkUJ
   {
     public Image Image { get; set; }
 
-    public void Serialize()
+    public string Serialize()
     {
-      JsonConvert.SerializeObject(this);
+      return JsonConvert.SerializeObject(this);
     }
 
     public void SetPosition(int x, int y)
@@ -40,9 +40,9 @@ namespace tabliczkUJ
   {
     public string RoomNumberText { get; set; }
 
-    public void Serialize()
+    public string Serialize()
     {
-      JsonConvert.SerializeObject(this);
+      return JsonConvert.SerializeObject(this);
     }
 
     public void SetPosition(int x, int y)
@@ -60,9 +60,9 @@ namespace tabliczkUJ
   {
     public string RoomMembersText { get; set; }
 
-    public void Serialize()
+    public string Serialize()
     {
-      JsonConvert.SerializeObject(this);
+      return JsonConvert.SerializeObject(this);
     }
 
     public void SetPosition(int x, int y)
