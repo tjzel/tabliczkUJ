@@ -8,5 +8,13 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
 
+        <Image Name="logoImage" HorizontalAlignment="Left" Height="125" Margin="20,19,0,0" VerticalAlignment="Top" Width="117" RenderTransformOrigin="0.533,0.527"/>
+        <Button Name="sala" Content="Numer sali" HorizontalAlignment="Left" Margin="673,29,0,0" VerticalAlignment="Top" Height="40" Width="98"/>
+        <Button Name="nazwiska" Content="Nazwiska" HorizontalAlignment="Left" Margin="673,106,0,0" VerticalAlignment="Top" Height="36" Width="98"/>
+        <Button Name="logoButton" Content="Wczytaj logo" HorizontalAlignment="Left" Margin="673,180,0,0" VerticalAlignment="Top" Height="37" Width="98" Click="Button_Click"/>
+        <Button Name="saveButton" Content="Zapisz" HorizontalAlignment="Left" Margin="673,264,0,0" VerticalAlignment="Top" Height="25" Width="98"/>
+        <Button Name="readButton" Content="Wczytaj" HorizontalAlignment="Left" Margin="673,311,0,0" VerticalAlignment="Top" Height="25" Width="98"/>
+        <Button Name="printButton"  Content="Drukuj" HorizontalAlignment="Left" Margin="673,359,0,0" VerticalAlignment="Top" Height="25" Width="98"/>
     </Grid>
+    
 </Window>
