@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Windows.Controls;
+using static tabliczkUJ.MainWindow;
 
 namespace tabliczkUJ
 {
@@ -14,11 +15,17 @@ namespace tabliczkUJ
   {
     public string Name { get; set; }
     public ICollection<IContentObject> ContentObjects;
+    public LogoObject LogoObject { get; set; } = new();
+
+    //[JsonConverter(typeof(RoomNumberObjectConverter))]
+    public RoomNumberObject RoomNumberObject { get; set; } = new();
+    public RoomMembersObject RoomMembersObject { get; set; } = new();
   }
 
   class LogoObject : IContentObject
   {
     public Image Image { get; set; }
+    public object Value { get; set; }
 
     public string Serialize()
     {
@@ -40,6 +47,8 @@ namespace tabliczkUJ
   {
     public string RoomNumberText { get; set; }
 
+    public object Value { get; set; }
+
     public string Serialize()
     {
       return JsonConvert.SerializeObject(this);
@@ -59,6 +68,10 @@ namespace tabliczkUJ
   class RoomMembersObject : IContentObject
   {
     public string RoomMembersText { get; set; }
+
+
+    public object Value { get; set; }
+
 
     public string Serialize()
     {
