@@ -11,56 +11,53 @@
       <ColumnDefinition Width="8*" MaxWidth="800"/>
       <ColumnDefinition Width="2*" />
     </Grid.ColumnDefinitions>
-    <FlowDocumentScrollViewer Grid.Column="0">
-      <FlowDocument PageWidth="800" Background="Beige">
-        <Table>
-          <Table.Columns>
-            <TableColumn Width="200"/>
-            <TableColumn Width="Auto"/>
-          </Table.Columns>
-          <TableRowGroup>
-            <TableRow>
-              <TableCell>
-                <BlockUIContainer Background="Yellow" >
-                  <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Left">
-                    <Image Source="assets/defaultLogo.gif" Name="logoImage" MaxWidth="200" MaxHeight="200" HorizontalAlignment="Left"/>
-                  </Border>
-                </BlockUIContainer>
-              </TableCell>
+    <Canvas Name="doorTagCanvas" Grid.Column="0" Background="White">
+      <Thumb Name="imageThumb" MaxWidth="200" MaxHeight="200" Background="LightBlue" Canvas.Left="0" Canvas.Top="0">
+        <Thumb.Template>
+          <ControlTemplate TargetType="Thumb">
+            <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Left">
+              <Image x:Name="logoImage" Source="assets/defaultLogo.gif" MaxWidth="200" MaxHeight="200" HorizontalAlignment="Left"/>
+            </Border>
+          </ControlTemplate>
+        </Thumb.Template>
+      </Thumb>
 
-              <TableCell>
-                <BlockUIContainer>
-                  <RichTextBox Name="roomName" Width="300" Height="200">
-                    <FlowDocument>
-                      <Paragraph TextAlignment="Center">
-                        Nr sali
-                      </Paragraph>
-                    </FlowDocument>
-                  </RichTextBox>
-                </BlockUIContainer>
-                
-              </TableCell>
-            </TableRow>
-          </TableRowGroup>
-        </Table>
-        <BlockUIContainer >
-          <RichTextBox Name="room" Width="300" Height="40">
-            <FlowDocument>
-              <Paragraph TextAlignment="Center">
-                Nazwiska
-              </Paragraph>
-            </FlowDocument>
-          </RichTextBox>
-        </BlockUIContainer>
-      </FlowDocument>
-    </FlowDocumentScrollViewer>
+      <Thumb Name="roomThumb" Background="Aquamarine" Canvas.Left="200" Canvas.Top="0">
+        <Thumb.Template>
+          <ControlTemplate TargetType="Thumb">
+            <RichTextBox Name="roomTextBox" Width="300" Height="200">
+              <FlowDocument>
+                <Paragraph TextAlignment="Center">
+                  Nr sali
+                </Paragraph>
+              </FlowDocument>
+            </RichTextBox>
+          </ControlTemplate>
+        </Thumb.Template>
+      </Thumb>
+
+      <Thumb Name="namesThumb" Background="Aquamarine" Canvas.Left="200" Canvas.Top="250">
+        <Thumb.Template>
+          <ControlTemplate TargetType="Thumb">
+            <RichTextBox Name="namesTextBox" Width="300" Height="200">
+              <FlowDocument>
+                <Paragraph TextAlignment="Center">
+                  Nazwiska
+                </Paragraph>
+              </FlowDocument>
+            </RichTextBox>
+          </ControlTemplate>
+        </Thumb.Template>
+      </Thumb>
+    </Canvas>
     <StackPanel Grid.Column="1" Background="BlueViolet">
+      <Button Name="enableDrag" Content="Przesuwaj elementy" Height="60" Width="120" Click="OnEnableDragClick"/>
       <Button Name="sala" Content="Numer sali" Height="60" Width="120" />
       <Button Name="nazwiska" Content="Nazwiska" Height="60" Width="120"/>
-      <Button Name="saveButton" Content="Zapisz" Height="60" Width="120"/>
-      <Button Name="logoButton" Content="Wczytaj logo" Height="60" Width="120" Click="Button_Click"/>
+      <Button Name="saveButton" Content="Zapisz" Height="60" Width="120" Click="OnSaveClick"/>
+      <Button Name="logoButton" Content="Wczytaj logo" Height="60" Width="120" Click="OnLoadLogoClick"/>
       <Button Name="readButton" Content="Wczytaj" Height="60" Width="120"/>
-      <Button Name="printButton" Content="Drukuj" Height="60" Width="120"/>
+      <Button Name="printButton" Content="Generuj" Height="60" Width="120" Click="OnGenerateClick"/>
     </StackPanel>
   </Grid>
 </Window>
