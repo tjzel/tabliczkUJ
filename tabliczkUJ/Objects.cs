@@ -69,6 +69,7 @@ namespace tabliczkUJ
   {
     public string RoomMembersText { get; set; }
 
+
     public object Value { get; set; }
 
 
