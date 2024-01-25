@@ -1,30 +1,25 @@
 ﻿using Microsoft.Win32;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
-using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Xps.Packaging;
-using System.Windows.Documents;
-using Newtonsoft.Json.Linq;
 
 namespace tabliczkUJ
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
   public partial class MainWindow : Window
   {
 
     private DoorTag doorTag = new();
+
+    private bool isResizing;
+
+    private Point mousePosition;
 
     public MainWindow()
     {
@@ -41,37 +36,33 @@ namespace tabliczkUJ
     {
       try
       {
-        // Create a SaveFileDialog to choose the PNG file location
         var saveFileDialog = new SaveFileDialog
         {
-          Filter = "PNG files (*.png)|*.png",
-          Title = "Save PNG Image",
-          FileName = "output.png"
+          Filter = "Pliki PNG (*.png)|*.png",
+          Title = "Zapisz PNG",
+          FileName = "tabliczka.png"
         };
 
         if (saveFileDialog.ShowDialog() == true)
         {
-          // Create a RenderTargetBitmap from the Canvas
           var renderBitmap = new RenderTargetBitmap(
               (int)canvas.ActualWidth, (int)canvas.ActualHeight, 96, 96, PixelFormats.Pbgra32);
           renderBitmap.Render(canvas);
 
-          // Encode the RenderTargetBitmap as a PNG image
           var pngEncoder = new PngBitmapEncoder();
           pngEncoder.Frames.Add(BitmapFrame.Create(renderBitmap));
 
-          // Save the PNG file
           using (var stream = new FileStream(saveFileDialog.FileName, FileMode.Create))
           {
             pngEncoder.Save(stream);
           }
 
-          MessageBox.Show($"PNG image saved successfully to {saveFileDialog.FileName}");
+          MessageBox.Show($"PNG zapisano pomyślnie w {saveFileDialog.FileName}");
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Error exporting to PNG: {ex.Message}");
+        MessageBox.Show($"Błąd podczas zapisu PNG: {ex.Message}");
       }
     }
 
@@ -79,7 +70,7 @@ namespace tabliczkUJ
     {
       var openFileDialog = new OpenFileDialog
       {
-        Filter = "Image files|*.png;*.jpeg;*.jpg;*.gif|All files|*.*"
+        Filter = "Pliki obrazów|*.png;*.jpeg;*.jpg;*.gif|Wszystkie pliki|*.*"
       };
       if (openFileDialog.ShowDialog() == true)
       {
@@ -89,43 +80,43 @@ namespace tabliczkUJ
       }
     }
 
-    private void OnImageThumbDrag(object sender, DragDeltaEventArgs e)
+    private void OnThumbDragStarted(object sender, DragStartedEventArgs e)
     {
+      var startPoint = Mouse.GetPosition(this);
       var thumb = sender as Thumb;
-
-      double left = Canvas.GetLeft(thumb) + e.HorizontalChange;
-      double top = Canvas.GetTop(thumb) + e.VerticalChange;
-
-      Canvas.SetLeft(thumb, left);
-      Canvas.SetTop(thumb, top);
-
-      Trace.WriteLine($"left: {e.HorizontalChange}, top: {e.VerticalChange}");
+      var left = Canvas.GetLeft(thumb);
+      var top = Canvas.GetTop(thumb);
+      isResizing = new[] { Math.Abs(left - startPoint.X), Math.Abs(left + thumb.Width - startPoint.X), Math.Abs(top - startPoint.Y), Math.Abs(top + thumb.Height - startPoint.Y) }.Min() < 10;
+      mousePosition = Mouse.GetPosition(thumb);
     }
 
-    private void OnRoomThumbDrag(object sender, DragDeltaEventArgs e)
+
+    private void OnThumbDragDelta(object sender, DragDeltaEventArgs e)
     {
       var thumb = sender as Thumb;
+      var newMousePosition = Mouse.GetPosition(thumb);
+      if (thumb != null)
+      {
 
-      double left = Canvas.GetLeft(thumb) + e.HorizontalChange;
-      double top = Canvas.GetTop(thumb) + e.VerticalChange;
 
-      Canvas.SetLeft(thumb, left);
-      Canvas.SetTop(thumb, top);
+        if (isResizing)
+        {
+          var xDiff = newMousePosition.X - mousePosition.X;
+          var yDiff = newMousePosition.Y - mousePosition.Y;
+          thumb.Width += xDiff;
+          thumb.Height += yDiff;
+        }
+        else
+        {
+          double left = Canvas.GetLeft(thumb) + e.HorizontalChange;
+          double top = Canvas.GetTop(thumb) + e.VerticalChange;
 
-      Trace.WriteLine($"left: {e.HorizontalChange}, top: {e.VerticalChange}");
-    }
+          Canvas.SetLeft(thumb, left);
+          Canvas.SetTop(thumb, top);
+        }
+      }
 
-    private void OnNamesThumbDrag(object sender, DragDeltaEventArgs e)
-    {
-      var thumb = sender as Thumb;
-
-      double left = Canvas.GetLeft(thumb) + e.HorizontalChange;
-      double top = Canvas.GetTop(thumb) + e.VerticalChange;
-
-      Canvas.SetLeft(thumb, left);
-      Canvas.SetTop(thumb, top);
-
-      Trace.WriteLine($"left: {e.HorizontalChange}, top: {e.VerticalChange}");
+      mousePosition = newMousePosition;
     }
 
     private void OnEnableDragClick(object sender, RoutedEventArgs e)
@@ -133,9 +124,14 @@ namespace tabliczkUJ
       var button = sender as Button;
       button.Content = "Edytuj zawartość";
 
-      imageThumb.DragDelta += OnImageThumbDrag;
-      roomThumb.DragDelta += OnRoomThumbDrag;
-      namesThumb.DragDelta += OnNamesThumbDrag;
+      imageThumb.DragStarted += OnThumbDragStarted;
+      imageThumb.DragDelta += OnThumbDragDelta;
+
+      roomThumb.DragStarted += OnThumbDragStarted;
+      roomThumb.DragDelta += OnThumbDragDelta;
+
+      namesThumb.DragStarted += OnThumbDragStarted;
+      namesThumb.DragDelta += OnThumbDragDelta;
 
       var roomText = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
       var namesText = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
@@ -149,11 +145,16 @@ namespace tabliczkUJ
     private void OnEnableEditClick(object sender, RoutedEventArgs e)
     {
       var button = sender as Button;
-      button.Content = "Przesuwaj elementy";
+      button.Content = "Edytuj elementy";
 
-      imageThumb.DragDelta -= OnImageThumbDrag;
-      roomThumb.DragDelta -= OnRoomThumbDrag;
-      namesThumb.DragDelta -= OnNamesThumbDrag;
+      imageThumb.DragStarted -= OnThumbDragStarted;
+      imageThumb.DragDelta -= OnThumbDragDelta;
+
+      roomThumb.DragStarted -= OnThumbDragStarted;
+      roomThumb.DragDelta -= OnThumbDragDelta;
+
+      namesThumb.DragStarted -= OnThumbDragStarted;
+      namesThumb.DragDelta -= OnThumbDragDelta;
 
       var roomText = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
       var namesText = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
@@ -170,19 +171,42 @@ namespace tabliczkUJ
     }
 
 
-  private void OnSaveClick(object sender, RoutedEventArgs e)
+    private void OnSaveClick(object sender, RoutedEventArgs e)
     {
       try
       {
-        doorTag.RoomNumberObject.Value = XamlWriter.Save(GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox"));
-        doorTag.LogoObject.Value = XamlWriter.Save(GetObjectFromThumb<Image>(imageThumb, "logoImage"));
-        doorTag.RoomMembersObject.Value = XamlWriter.Save(GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox"));
-        // Create a SaveFileDialog to choose the PNG file location
+        var roomTextBox = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
+        doorTag.RoomObject.Width = roomThumb.Width;
+        doorTag.RoomObject.Height = roomThumb.Height;
+        doorTag.RoomObject.Top = Canvas.GetTop(roomThumb);
+        doorTag.RoomObject.Left = Canvas.GetLeft(roomThumb);
+        doorTag.RoomObject.FontFamily = roomTextBox.FontFamily;
+        doorTag.RoomObject.Foreground = roomTextBox.Foreground;
+        doorTag.RoomObject.FontSize = roomTextBox.FontSize;
+        doorTag.RoomObject.FlowDocumentString = XamlWriter.Save(roomTextBox.Document);
+
+        var namesTextBox = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
+        doorTag.MembersObject.Width = namesThumb.Width;
+        doorTag.MembersObject.Height = namesThumb.Height;
+        doorTag.MembersObject.Top = Canvas.GetTop(namesThumb);
+        doorTag.MembersObject.Left = Canvas.GetLeft(namesThumb);
+        doorTag.MembersObject.FontFamily = namesTextBox.FontFamily;
+        doorTag.MembersObject.Foreground = namesTextBox.Foreground;
+        doorTag.MembersObject.FontSize = namesTextBox.FontSize;
+        doorTag.MembersObject.FlowDocumentString = XamlWriter.Save(namesTextBox.Document);
+
+        var image = GetObjectFromThumb<Image>(imageThumb, "logoImage");
+        doorTag.LogoObject.Source = image.Source;
+        doorTag.LogoObject.Width = imageThumb.Width;
+        doorTag.LogoObject.Height = imageThumb.Height;
+        doorTag.LogoObject.Top = Canvas.GetTop(imageThumb);
+        doorTag.LogoObject.Left = Canvas.GetLeft(imageThumb);
+
         var saveFileDialog = new SaveFileDialog
         {
-          Filter = "JSON files (*.json)|*.png",
-          Title = "Save JSON",
-          FileName = "output.json"
+          Filter = "Pliki JSON (*.json)|*.png",
+          Title = "Zapisz tabliczkę",
+          FileName = "tabliczka.json"
         };
 
         if (saveFileDialog.ShowDialog() == true)
@@ -198,13 +222,148 @@ namespace tabliczkUJ
             serializer.Serialize(jsonWriter, doorTag);
           }
 
-          MessageBox.Show($"JSON saved successfully to {saveFileDialog.FileName}");
+          MessageBox.Show($"Tabliczka zapisana w {saveFileDialog.FileName}");
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Error exporting to JSON: {ex.Message}");
+        MessageBox.Show($"Błąd zapisu tabliczki: {ex.Message}");
       }
+    }
+
+    private void OnLoadClick(object sender, RoutedEventArgs e)
+    {
+      try
+      {
+        OpenFileDialog openFileDialog = new OpenFileDialog
+        {
+          Filter = "Pliki JSON (*.json)|*.json",
+          Title = "Otwórz tabliczkę"
+        };
+
+        if (openFileDialog.ShowDialog() == true)
+        {
+          string jsonContent = File.ReadAllText(openFileDialog.FileName);
+
+          DoorTag loadedDoorTag = JsonConvert.DeserializeObject<DoorTag>(jsonContent);
+          var roomObject = loadedDoorTag.RoomObject;
+          var membersObject = loadedDoorTag.MembersObject;
+          var logoObject = loadedDoorTag.LogoObject;
+
+          var roomTextBox = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
+          roomTextBox.FontFamily = roomObject.FontFamily;
+          roomTextBox.Foreground = roomObject.Foreground;
+          roomTextBox.FontSize = roomObject.FontSize;
+          roomTextBox.Document = XamlReader.Parse(roomObject.FlowDocumentString) as FlowDocument;
+          roomThumb.Width = roomObject.Width;
+          roomThumb.Height = roomObject.Height;
+          Canvas.SetTop(roomThumb, roomObject.Top);
+          Canvas.SetLeft(roomThumb, roomObject.Left);
+
+          var namesTextBox = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
+          namesTextBox.FontFamily = membersObject.FontFamily;
+          namesTextBox.Foreground = membersObject.Foreground;
+          namesTextBox.FontSize = membersObject.FontSize;
+          namesTextBox.Document = XamlReader.Parse(membersObject.FlowDocumentString) as FlowDocument;
+          namesThumb.Width = membersObject.Width;
+          namesThumb.Height = membersObject.Height;
+          Canvas.SetTop(namesThumb, membersObject.Top);
+          Canvas.SetLeft(namesThumb, membersObject.Left);
+
+          var logoImage = GetObjectFromThumb<Image>(imageThumb, "logoImage");
+          logoImage.Source = logoObject.Source;
+          imageThumb.Width = logoObject.Width;
+          imageThumb.Height = logoObject.Height;
+          Canvas.SetTop(imageThumb, logoObject.Top);
+          Canvas.SetLeft(imageThumb, logoObject.Left);
+
+          MessageBox.Show($"Tabliczka wczytana pomyślnie.");
+        }
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show($"Błąd odczytu tabliczki: {ex.Message}");
+      }
+    }
+
+    private void OnMouseEnterThumb(object sender, MouseEventArgs e)
+    {
+      var thumb = sender as Thumb;
+      var border = GetObjectFromThumb<Border>(thumb, "border");
+      border.BorderThickness = new Thickness(2);
+    }
+
+    private void OnMouseLeaveThumb(object sender, MouseEventArgs e)
+    {
+      var thumb = sender as Thumb;
+      var border = GetObjectFromThumb<Border>(thumb, "border");
+      border.BorderThickness = new Thickness(0);
+    }
+
+    private void OnFontFamilySelectedRoomText(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        var content = (e.AddedItems[0] as ComboBoxItem).Content as string;
+        var roomTextBox = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
+        roomTextBox.FontFamily = new FontFamily(content);
+      }
+      catch { }
+    }
+
+    private void OnFontSizeSelectedRoomText(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        var content = (e.AddedItems[0] as ComboBoxItem).Content as string;
+        var roomTextBox = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
+        roomTextBox.FontSize = double.Parse(content);
+      }
+      catch { }
+    }
+
+    private void OnForegroundSelectedRoomText(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        var content = (e.AddedItems[0] as ComboBoxItem).Tag as string;
+        var roomTextBox = GetObjectFromThumb<RichTextBox>(roomThumb, "roomTextBox");
+        roomTextBox.Foreground = (Brush)new BrushConverter().ConvertFromString(content);
+      }
+      catch { }
+    }
+
+    private void OnFontFamilySelectedNamesText(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        var content = (e.AddedItems[0] as ComboBoxItem).Content as string;
+        var namesTextBox = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
+        namesTextBox.FontFamily = new FontFamily(content);
+      }
+      catch { }
+    }
+
+    private void OnFontSizeSelectedNamesText(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        var content = (e.AddedItems[0] as ComboBoxItem).Content as string;
+        var namesTextBox = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
+        namesTextBox.FontSize = double.Parse(content);
+      }
+      catch { }
+    }
+
+    private void OnForegroundSelectedNamesText(object sender, SelectionChangedEventArgs e)
+    {
+      try
+      {
+        var content = (e.AddedItems[0] as ComboBoxItem).Tag as string;
+        var namesTextBox = GetObjectFromThumb<RichTextBox>(namesThumb, "namesTextBox");
+        namesTextBox.Foreground = (Brush)new BrushConverter().ConvertFromString(content);
+      }
+      catch { }
     }
   }
 }
