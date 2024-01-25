@@ -21,7 +21,6 @@ namespace tabliczkUJ
 
     private Point mousePosition;
 
-
     public MainWindow()
     {
       InitializeComponent();
