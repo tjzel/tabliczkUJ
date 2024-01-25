@@ -5,59 +5,112 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:tabliczkUJ"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="1000">
-  <Grid>
+        Title="MainWindow" Height="500" Width="1200">
+  <Grid Background="Beige">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="8*" MaxWidth="800"/>
       <ColumnDefinition Width="2*" />
+      <ColumnDefinition Width="2*" />
     </Grid.ColumnDefinitions>
     <Canvas Name="doorTagCanvas" Grid.Column="0" Background="White">
-      <Thumb Name="imageThumb" MaxWidth="200" MaxHeight="200" Background="LightBlue" Canvas.Left="0" Canvas.Top="0">
+      <Thumb Name="imageThumb" Width="200" Height="200" Canvas.Left="50" Canvas.Top="50" BorderBrush="Aquamarine" MouseEnter="OnMouseEnterThumb" MouseLeave="OnMouseLeaveThumb">
         <Thumb.Template>
           <ControlTemplate TargetType="Thumb">
-            <Border BorderBrush="Black" BorderThickness="2" HorizontalAlignment="Left">
-              <Image x:Name="logoImage" Source="assets/defaultLogo.gif" MaxWidth="200" MaxHeight="200" HorizontalAlignment="Left"/>
+            <Border Name="border" BorderBrush="Aquamarine" BorderThickness="0">
+              <Image x:Name="logoImage" Source="assets/defaultLogo.gif" HorizontalAlignment="Left" Stretch="Fill"/>
             </Border>
           </ControlTemplate>
         </Thumb.Template>
       </Thumb>
 
-      <Thumb Name="roomThumb" Background="Aquamarine" Canvas.Left="200" Canvas.Top="0">
+      <Thumb Name="roomThumb" Canvas.Left="350" Canvas.Top="50" Width="200" Height="50" MouseEnter="OnMouseEnterThumb" MouseLeave="OnMouseLeaveThumb">
         <Thumb.Template>
           <ControlTemplate TargetType="Thumb">
-            <RichTextBox Name="roomTextBox" Width="300" Height="200">
-              <FlowDocument>
-                <Paragraph TextAlignment="Center">
-                  Nr sali
-                </Paragraph>
-              </FlowDocument>
-            </RichTextBox>
+            <Border Name="border" BorderBrush="Aquamarine" BorderThickness="0">
+              <RichTextBox Name="roomTextBox" BorderThickness="0" Foreground="Black">
+                <FlowDocument>
+                  <Paragraph>
+                    Nr sali
+                  </Paragraph>
+                </FlowDocument>
+              </RichTextBox>
+            </Border>
           </ControlTemplate>
         </Thumb.Template>
       </Thumb>
 
-      <Thumb Name="namesThumb" Background="Aquamarine" Canvas.Left="200" Canvas.Top="250">
+      <Thumb Name="namesThumb" Canvas.Left="350" Canvas.Top="200" Width="200" Height="50" MouseEnter="OnMouseEnterThumb" MouseLeave="OnMouseLeaveThumb">
         <Thumb.Template>
           <ControlTemplate TargetType="Thumb">
-            <RichTextBox Name="namesTextBox" Width="300" Height="200">
-              <FlowDocument>
-                <Paragraph TextAlignment="Center">
-                  Nazwiska
-                </Paragraph>
-              </FlowDocument>
-            </RichTextBox>
+            <Border Name="border" BorderBrush="Aquamarine" BorderThickness="0">
+              <RichTextBox Name="namesTextBox" BorderThickness="0">
+                <FlowDocument>
+                  <Paragraph>
+                    Nazwiska
+                  </Paragraph>
+                </FlowDocument>
+              </RichTextBox>
+            </Border>
           </ControlTemplate>
         </Thumb.Template>
       </Thumb>
     </Canvas>
-    <StackPanel Grid.Column="1" Background="BlueViolet">
-      <Button Name="enableDrag" Content="Przesuwaj elementy" Height="60" Width="120" Click="OnEnableDragClick"/>
-      <Button Name="sala" Content="Numer sali" Height="60" Width="120" />
-      <Button Name="nazwiska" Content="Nazwiska" Height="60" Width="120"/>
-      <Button Name="saveButton" Content="Zapisz" Height="60" Width="120" Click="OnSaveClick"/>
-      <Button Name="logoButton" Content="Wczytaj logo" Height="60" Width="120" Click="OnLoadLogoClick"/>
-      <Button Name="readButton" Content="Wczytaj" Height="60" Width="120"/>
-      <Button Name="printButton" Content="Generuj" Height="60" Width="120" Click="OnGenerateClick"/>
+    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+      <Button Name="enableDrag" Content="Przesuwaj elementy" Height="40" Width="120" Click="OnEnableDragClick" Margin="5"/>
+      <Button Name="logoButton" Content="Wybierz logo" Height="40" Width="120" Click="OnLoadLogoClick" Margin="5"/>
+      <Button Name="saveButton" Content="Zapisz tabliczkę" Height="40" Width="120" Click="OnSaveClick" Margin="5"/>
+      <Button Name="readButton" Content="Wczytaj tabliczkę" Height="40" Width="120" Click="OnLoadClick" Margin="5"/>
+      <Button Name="printButton" Content="Generuj PNG" Height="40" Width="120" Click="OnGenerateClick" Margin="5"/>
+    </StackPanel>
+    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+      <TextBlock HorizontalAlignment="Center" >
+        Czcionka numeru sali
+      </TextBlock>
+      <ComboBox Margin="5" SelectionChanged="OnFontFamilySelectedRoomText" >
+        <ComboBoxItem Content="Segoe UI" IsSelected="True"/>
+        <ComboBoxItem Content="Calibri"/>
+        <ComboBoxItem Content="Arial"/>
+      </ComboBox>
+      <TextBlock HorizontalAlignment="Center" >
+    Wielkość czcionki numeru sali
+      </TextBlock>
+      <ComboBox Margin="5" SelectionChanged="OnFontSizeSelectedRoomText">
+        <ComboBoxItem Content="12" IsSelected="True"/>
+        <ComboBoxItem Content="16"/>
+        <ComboBoxItem Content="20"/>
+      </ComboBox>
+      <TextBlock HorizontalAlignment="Center" >
+    Kolor czcionki numeru sali
+    </TextBlock>
+    <ComboBox Margin="5" SelectionChanged="OnForegroundSelectedRoomText">
+      <ComboBoxItem Content="Czarny" Tag="Black" IsSelected="True"/>
+      <ComboBoxItem Content="Żółty" Tag="Yellow"/>
+      <ComboBoxItem Content="Niebieski" Tag="Blue"/>
+    </ComboBox>
+      <TextBlock HorizontalAlignment="Center" >
+    Czcionka nazwisk
+      </TextBlock>
+      <ComboBox Margin="5" SelectionChanged="OnFontFamilySelectedNamesText">
+        <ComboBoxItem Content="Segoe UI" IsSelected="True"/>
+        <ComboBoxItem Content="Calibri"/>
+        <ComboBoxItem Content="Arial"/>
+      </ComboBox>
+      <TextBlock HorizontalAlignment="Center" >
+Wielkość czcionki nazwisk
+      </TextBlock>
+      <ComboBox Margin="5" SelectionChanged="OnFontSizeSelectedNamesText">
+        <ComboBoxItem Content="12" IsSelected="True"/>
+        <ComboBoxItem Content="16"/>
+        <ComboBoxItem Content="20"/>
+      </ComboBox>
+      <TextBlock HorizontalAlignment="Center" >
+Kolor czcionki nazwisk
+      </TextBlock>
+      <ComboBox Margin="5" SelectionChanged="OnForegroundSelectedNamesText">
+        <ComboBoxItem Content="Czarny" Tag="Black" IsSelected="True"/>
+        <ComboBoxItem Content="Żółty" Tag="Yellow"/>
+        <ComboBoxItem Content="Niebieski" Tag="Blue"/>
+      </ComboBox>
     </StackPanel>
   </Grid>
 </Window>

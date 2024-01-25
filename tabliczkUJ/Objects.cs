@@ -1,90 +1,35 @@
 ﻿using Newtonsoft.Json;
 using System.Windows.Controls;
-using static tabliczkUJ.MainWindow;
+using System.Windows.Media;
 
 namespace tabliczkUJ
 {
-  interface IContentObject
-  {
-    public string Serialize();
-    public void SetPosition(int x, int y);
-    public void SetSize(int x, int y);
-  }
 
   class DoorTag
   {
-    public string Name { get; set; }
-    public ICollection<IContentObject> ContentObjects;
     public LogoObject LogoObject { get; set; } = new();
-
-    //[JsonConverter(typeof(RoomNumberObjectConverter))]
-    public RoomNumberObject RoomNumberObject { get; set; } = new();
-    public RoomMembersObject RoomMembersObject { get; set; } = new();
+    public TextObject RoomObject { get; set; } = new();
+    public TextObject MembersObject { get; set; } = new();
   }
 
-  class LogoObject : IContentObject
+  class LogoObject
   {
-    public Image Image { get; set; }
-    public object Value { get; set; }
-
-    public string Serialize()
-    {
-      return JsonConvert.SerializeObject(this);
-    }
-
-    public void SetPosition(int x, int y)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void SetSize(int x, int y)
-    {
-      throw new NotImplementedException();
-    }
+    public ImageSource? Source { get; set; }
+    public double Width { get; set; }
+    public double Height { get; set; }
+    public double Top { get; set; }
+    public double Left { get; set; }
   }
 
-  class RoomNumberObject : IContentObject
+  class TextObject
   {
-    public string RoomNumberText { get; set; }
-
-    public object Value { get; set; }
-
-    public string Serialize()
-    {
-      return JsonConvert.SerializeObject(this);
-    }
-
-    public void SetPosition(int x, int y)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void SetSize(int x, int y)
-    {
-      throw new NotImplementedException();
-    }
-  }
-
-  class RoomMembersObject : IContentObject
-  {
-    public string RoomMembersText { get; set; }
-
-    public object Value { get; set; }
-
-
-    public string Serialize()
-    {
-      return JsonConvert.SerializeObject(this);
-    }
-
-    public void SetPosition(int x, int y)
-    {
-      throw new NotImplementedException();
-    }
-
-    public void SetSize(int x, int y)
-    {
-      throw new NotImplementedException();
-    }
+    public FontFamily? FontFamily { get; set; }
+    public double FontSize { get; set; }
+    public Brush? Foreground { get; set; }
+    public string? FlowDocumentString { get; set; }
+    public double Width { get; set; }
+    public double Height { get; set; }
+    public double Top { get; set; }
+    public double Left { get; set;}
   }
 }
